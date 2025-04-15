@@ -1,6 +1,6 @@
 from agexp.keydoor.env import tile_grid_from_string_list, get_agent_position, KeyDoorEnv
 
-from agexp.keydoor.types import Tile, Action
+from agexp.keydoor.structures import Tile, Action
 
 
 def test_tile_grid_from_string_list():

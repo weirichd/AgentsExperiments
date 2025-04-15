@@ -1,4 +1,4 @@
-from agexp.keydoor.types import Tile, Action, Observation, Grid
+from agexp.keydoor.structures import Tile, Action, Observation, Grid
 
 
 def tile_grid_from_string_list(string_list: list[str]) -> Grid:
@@ -58,26 +58,30 @@ class KeyDoorEnv:
     def step(self, action: Action) -> tuple[Observation, bool, dict]:
         x, y = self.agent_position
 
-        match action:
-            case Action.OPEN_DOOR:
-                if self.has_key and self.agent_position == self.door_position:
-                    self.done = True
-            case Action.PICK_UP_KEY:
-                if not self.has_key and self.agent_position == self.key_position:
-                    self.has_key = True
-                    self.standing_tile = Tile.EMPTY
-            case Action.MOVE_UP:
-                dest = (x, y - 1)
-                self._update_grid(dest)
-            case Action.MOVE_DOWN:
-                dest = (x, y + 1)
-                self._update_grid(dest)
-            case Action.MOVE_RIGHT:
-                dest = (x - 1, y)
-                self._update_grid(dest)
-            case Action.MOVE_LEFT:
-                dest = (x + 1, y)
-                self._update_grid(dest)
+        if action == Action.OPEN_DOOR:
+            if self.has_key and self.agent_position == self.door_position:
+                self.done = True
+
+        elif action == Action.PICK_UP_KEY:
+            if not self.has_key and self.agent_position == self.key_position:
+                self.has_key = True
+                self.standing_tile = Tile.EMPTY
+
+        else:
+            match action:
+                case Action.MOVE_UP:
+                    dest = (x, y - 1)
+                case Action.MOVE_DOWN:
+                    dest = (x, y + 1)
+                case Action.MOVE_RIGHT:
+                    dest = (x + 1, y)
+                case Action.MOVE_LEFT:
+                    dest = (x - 1, y)
+                case _:
+                    raise ValueError("Invalid Action")
+
+            self.n_steps += 1
+            self._update_grid(dest)
 
         return Observation(self.grid, self.has_key), self.done, {}
 
@@ -96,3 +100,4 @@ class KeyDoorEnv:
         # Move the agent
         self.standing_tile = self.grid[dy][dx]
         self.grid[dy][dx] = Tile.AGENT
+        self.agent_position = dest
