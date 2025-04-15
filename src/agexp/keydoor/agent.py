@@ -4,6 +4,8 @@ from agexp.keydoor.structures import Observation, Action
 
 import random
 
+from textwrap import dedent
+
 
 class Agent(ABC):
     @abstractmethod
@@ -51,3 +53,65 @@ class RandomAgent(Agent):
 
     def act(self) -> Action:
         return random.choice(list(Action))
+
+
+class FakeLLM:
+    """A Fake LLM that is actually contolled by the user."""
+
+    def complete_prompt(self, prompt):
+        response = input(prompt)
+
+        return response
+
+
+class LLMAgent(Agent):
+    _prompt_header = """
+    You are an agent in a grid world. Each character has the following meanings:
+
+    @ - You
+    # - Wall
+    K - Key
+    D - Door
+
+    Observation:
+    """
+
+    _prompt_footer = """
+    What will you do? Say one of:
+    move up, move down, move left, move right, pick up key, open door."""
+
+    def __init__(self):
+        self.prompt = ""
+        self.llm = FakeLLM()
+
+    def observe(self, obs: Observation) -> None:
+        self.obs = obs
+
+    def act(self) -> Action:
+        prompt = self._format_prompt()
+        raw_response = self.llm.complete_prompt(prompt)
+        return self._parse_response(raw_response)
+
+    def _format_prompt(self) -> str:
+        prompt = dedent(self._prompt_header)
+        prompt += self.obs.as_string
+        prompt += dedent(self._prompt_footer)
+
+        return prompt
+
+    def _parse_response(self, text: str) -> Action:
+        text = text.lower()
+        if "up" in text:
+            return Action.MOVE_UP
+        elif "down" in text:
+            return Action.MOVE_DOWN
+        elif "left" in text:
+            return Action.MOVE_LEFT
+        elif "right" in text:
+            return Action.MOVE_RIGHT
+        elif "pick" in text:
+            return Action.PICK_UP_KEY
+        elif "open" in text:
+            return Action.OPEN_DOOR
+        else:
+            raise ValueError(f"Unrecognized response: {text}")

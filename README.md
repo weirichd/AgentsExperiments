@@ -1,7 +1,6 @@
-# ML Template
+# AI Agents Learning
 
-Machine Learning / Deep Learning Project Template
-Supports local development, Dockerized training & serving, MLflow tracking, GPU/CPU flexibility.
+In this repo, I am trying to learn a little about how LLM based AI Agents work.
 
 ---
 

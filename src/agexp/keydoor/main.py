@@ -1,39 +1,55 @@
 from agexp.keydoor.env import KeyDoorEnv
-from agexp.keydoor.agent import CheatingAgent, RandomAgent
+from agexp.keydoor.agent import CheatingAgent, RandomAgent, LLMAgent, Agent
 
 import click
-
-
-AGENTS = {
-    "cheating": CheatingAgent,
-    "random": RandomAgent,
-}
 
 
 @click.command()
 @click.option(
     "--agent",
     "agent_name",
-    type=click.Choice(AGENTS.keys()),
+    type=click.Choice(["cheating", "random", "llm"]),
     default="cheating",
     help="Which agent to use",
 )
 @click.option("--render/--no-render", default=True, help="Render the grid at each step")
-def main(agent_name: str, render: bool):
+@click.option(
+    "--max-iter",
+    "max_iter",
+    default=10_000,
+    type=int,
+    help="Max number of actions before we give up",
+)
+def main(agent_name: str, render: bool, max_iter: int):
     env = KeyDoorEnv()
-    agent = AGENTS[agent_name]()
+
+    agent: Agent
+
+    if agent_name == "cheating":
+        agent = CheatingAgent()
+    elif agent_name == "random":
+        agent = RandomAgent()
+    else:
+        agent = LLMAgent()
+
     obs = env.reset()
     done = False
 
-    while not done:
+    i = 0
+    while not done and i < max_iter:
         if render:
             env.render()
         agent.observe(obs)
         action = agent.act()
         obs, done, info = env.step(action)
 
+        i += 1
+
     print("Simulation done!")
-    print(f"Completed in {env.n_steps} steps")
+    if i < max_iter:
+        print(f"Completed in {i} steps")
+    else:
+        print("Failed to complete.")
 
 
 if __name__ == "__main__":

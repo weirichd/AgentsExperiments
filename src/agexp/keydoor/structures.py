@@ -26,3 +26,12 @@ class Action(Enum):
 class Observation:
     grid: list[list[Tile]]
     has_key: bool
+
+    @property
+    def as_string(self) -> str:
+        result = "\n".join(["".join([t.value for t in row]) for row in self.grid])
+        result += "\n"
+        if self.has_key:
+            result += "You have the key."
+
+        return result
