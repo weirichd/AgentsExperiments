@@ -1,0 +1,62 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Poetry virtualenvs (if inside project)
+.env/    # Only ignore the directory, not the .env file
+.venv
+venv/
+
+# Distribution / packaging
+*.egg-info/
+dist/
+build/
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# Pytest cache
+.cache/
+
+# MLflow runs
+mlruns/
+
+# Local data/models
+data/
+models/
+
+# SQLite DB for MLflow (local dev only)
+mlflow.db
+
+# Requirements file (generated from Poetry)
+requirements.txt
+
+# Docker files
+*.log
+docker-compose.override.yml
+
+# OS crap
+.DS_Store
+Thumbs.db
+
+# PyCharm / VSCode / JetBrains
+.idea/
+.vscode/
+
+# GitHub Actions cache
+.github/workflows/*.bak
+
+# Specific to template repo only (optional cleanup after clone)
+.github/workflows/upgrade.yml
+.github/TEMPLATE_ONLY.md
+
+
+# Vim
+tags
+*.swp
+*.swo
+*~
+
+# GPU Check
+.no-gpu

@@ -1,0 +1,25 @@
+ARG TF_IMAGE
+
+FROM ${TF_IMAGE}
+
+WORKDIR /workspace
+USER root
+
+# Install system dependencies
+COPY apt-packages.txt .
+RUN apt-get update && \
+    grep -vE '^\s*#|^\s*$' apt-packages.txt | xargs apt-get install -y && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN pip install --upgrade pip
+
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir --ignore-installed -r requirements.txt
+
+COPY src /workspace/src
+
+WORKDIR /workspace
+
+# Default command is Jupyter Notebook
+CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]

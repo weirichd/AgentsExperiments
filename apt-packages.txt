@@ -1,0 +1,6 @@
+graphviz
+# Uncomment for RL / pygame / SDL2 projects
+# libsdl2-dev
+# libsdl2-image-dev
+# libsdl2-mixer-dev
+# libsdl2-ttf-dev

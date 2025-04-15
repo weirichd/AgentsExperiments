@@ -1,0 +1,34 @@
+default_language_version:
+  python: python3.11
+
+repos:
+  - repo: https://github.com/psf/black
+    rev: 25.1.0
+    hooks:
+      - id: black
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.15.0
+    hooks:
+      - id: mypy
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.2.0
+    hooks:
+      - id: flake8
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+
+  - repo: local
+    hooks:
+      - id: poetry-export-requirements
+        name: Export requirements.txt
+        entry: make export-requirements
+        language: system
+        pass_filenames: false

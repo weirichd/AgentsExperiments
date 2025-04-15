@@ -1,0 +1,43 @@
+# Ignore Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyc
+
+# Ignore local venvs
+.env
+.venv
+venv/
+
+# Ignore git history
+.git
+.gitignore
+
+# Ignore local dev artifacts
+data/
+models/
+mlruns/
+mlflow.db
+
+# Ignore Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Ignore build artifacts
+*.egg-info/
+dist/
+build/
+
+# Ignore Docker-specific things
+docker-compose.override.yml
+*.log
+
+# Ignore editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Ignore pre-commit generated cache
+.cache/
