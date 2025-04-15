@@ -3,7 +3,7 @@ import numpy as np
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from {{package_name}}.predict import load_model, predict
+from agexp.predict import load_model, predict
 
 app = FastAPI()
 

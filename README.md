@@ -30,7 +30,7 @@ chmod +x rename.sh
 ./rename.sh <your package name>
 ```
 
-This will replace every instance of  `{{package_name}}` with whatever you entered, excluding a few important files.
+This will replace every instance of  `agexp` with whatever you entered, excluding a few important files.
 
 
 ### 3. Initialize the project locally

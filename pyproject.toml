@@ -1,13 +1,12 @@
 [tool.poetry]
-name = "{{package_name}}"
+name = "agexp"
 version = "0.1.0"
-description = "Machine Learning / Deep Learning Project Template"
-authors = ["Your Name <you@example.com>"]
-packages = [{ include = "{{package_name}}", from = "src" }]
+description = "Experiments with AI Agents"
+authors = ["David E. Weirich <weirich.david@gmail.com>"]
+packages = [{ include = "agexp", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-tensorflow = "^2.19"
 mlflow = "^2.21"
 ipython = "^9.1"
 

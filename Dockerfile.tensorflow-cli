@@ -19,4 +19,4 @@ COPY src /workspace/src
 
 WORKDIR /workspace
 
-CMD ["python", "-m", "{{package_name}}.train"]
+CMD ["python", "-m", "agexp.train"]

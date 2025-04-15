@@ -24,4 +24,4 @@ COPY src /workspace/src
 WORKDIR /workspace
 
 # Default command runs the API
-CMD ["uvicorn", "{{package_name}}.api:app", "--host", "0.0.0.0", "--port=8000"]
+CMD ["uvicorn", "agexp.api:app", "--host", "0.0.0.0", "--port=8000"]

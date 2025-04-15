@@ -1,5 +1,5 @@
 import tensorflow as tf
-from {{package_name}}.train import build_model
+from agexp.train import build_model
 
 
 def test_build_model():
