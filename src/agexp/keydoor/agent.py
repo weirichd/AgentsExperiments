@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from agexp.keydoor.structures import Observation, Action
+from agexp.keydoor.language_model import LanguageModel, FakeLLM
 
 import random
 
@@ -55,15 +56,6 @@ class RandomAgent(Agent):
         return random.choice(list(Action))
 
 
-class FakeLLM:
-    """A Fake LLM that is actually contolled by the user."""
-
-    def complete_prompt(self, prompt):
-        response = input(prompt)
-
-        return response
-
-
 class LLMAgent(Agent):
     _prompt_header = """
     You are an agent in a grid world. Each character has the following meanings:
@@ -80,9 +72,17 @@ class LLMAgent(Agent):
     What will you do? Say one of:
     move up, move down, move left, move right, pick up key, open door."""
 
-    def __init__(self):
+    def __init__(self, backend: str):
         self.prompt = ""
-        self.llm = FakeLLM()
+
+        self.llm: LanguageModel
+
+        if backend == "fake":
+            self.llm = FakeLLM()
+        elif backend == "openai":
+            raise NotImplementedError()
+        else:
+            raise ValueError(f"Non-supported LLM backend: {backend}")
 
     def observe(self, obs: Observation) -> None:
         self.obs = obs

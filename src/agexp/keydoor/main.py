@@ -20,7 +20,13 @@ import click
     type=int,
     help="Max number of actions before we give up",
 )
-def main(agent_name: str, render: bool, max_iter: int):
+@click.option(
+    "--llm-backend",
+    type=click.Choice(["fake", "openai"]),
+    default="fake",
+    help="Which LLM backend to use",
+)
+def main(agent_name: str, render: bool, max_iter: int, llm_backend: str):
     env = KeyDoorEnv()
 
     agent: Agent
@@ -30,7 +36,7 @@ def main(agent_name: str, render: bool, max_iter: int):
     elif agent_name == "random":
         agent = RandomAgent()
     else:
-        agent = LLMAgent()
+        agent = LLMAgent(llm_backend)
 
     obs = env.reset()
     done = False
