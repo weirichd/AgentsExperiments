@@ -1,11 +1,9 @@
 from abc import ABC, abstractmethod
 
 from agexp.keydoor.structures import Observation, Action
-from agexp.keydoor.language_model import LanguageModel, FakeLLM
+from agexp.keydoor.language_model import LanguageModel, FakeLLM, OpenAIChatLLM
 
 import random
-
-from textwrap import dedent
 
 
 class Agent(ABC):
@@ -57,20 +55,6 @@ class RandomAgent(Agent):
 
 
 class LLMAgent(Agent):
-    _prompt_header = """
-    You are an agent in a grid world. Each character has the following meanings:
-
-    @ - You
-    # - Wall
-    K - Key
-    D - Door
-
-    Observation:
-    """
-
-    _prompt_footer = """
-    What will you do? Say one of:
-    move up, move down, move left, move right, pick up key, open door."""
 
     def __init__(self, backend: str):
         self.prompt = ""
@@ -80,7 +64,7 @@ class LLMAgent(Agent):
         if backend == "fake":
             self.llm = FakeLLM()
         elif backend == "openai":
-            raise NotImplementedError()
+            self.llm = OpenAIChatLLM()
         else:
             raise ValueError(f"Non-supported LLM backend: {backend}")
 
@@ -93,11 +77,7 @@ class LLMAgent(Agent):
         return self._parse_response(raw_response)
 
     def _format_prompt(self) -> str:
-        prompt = dedent(self._prompt_header)
-        prompt += self.obs.as_string
-        prompt += dedent(self._prompt_footer)
-
-        return prompt
+        return self.obs.as_string
 
     def _parse_response(self, text: str) -> Action:
         text = text.lower()

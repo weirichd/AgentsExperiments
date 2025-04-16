@@ -2,6 +2,10 @@ from agexp.keydoor.env import KeyDoorEnv
 from agexp.keydoor.agent import CheatingAgent, RandomAgent, LLMAgent, Agent
 
 import click
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path=".env")
+load_dotenv(dotenv_path=".env.secret", override=True)
 
 
 @click.command()
@@ -45,6 +49,7 @@ def main(agent_name: str, render: bool, max_iter: int, llm_backend: str):
     while not done and i < max_iter:
         if render:
             env.render()
+            print("\n-------\n")
         agent.observe(obs)
         action = agent.act()
         obs, done, info = env.step(action)

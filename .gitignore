@@ -5,6 +5,7 @@ __pycache__/
 
 # Poetry virtualenvs (if inside project)
 .env/    # Only ignore the directory, not the .env file
+.env.secret
 .venv
 venv/
 
