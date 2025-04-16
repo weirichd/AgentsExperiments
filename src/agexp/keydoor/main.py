@@ -1,28 +1,60 @@
+import click
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
+from rich.text import Text
+from rich import box
 from agexp.keydoor.env import KeyDoorEnv
 from agexp.keydoor.agent import CheatingAgent, RandomAgent, LLMAgent, Agent
+from agexp.keydoor.structures import Action
 
-import click
 from dotenv import load_dotenv
+
+
+console = Console()
+
 
 load_dotenv(dotenv_path=".env")
 load_dotenv(dotenv_path=".env.secret", override=True)
 
 
+def render_grid(grid) -> Table:
+    table = Table.grid(padding=0)
+    for row in grid:
+        row_str = ""
+        for tile in row:
+            symbol = tile.value
+            style = {
+                "@": "bold cyan",
+                "K": "bold yellow",
+                "D": "bold green",
+                "#": "grey39",
+            }.get(symbol, "white")
+            row_str += f"[{style}]{symbol}[/{style}]"
+        table.add_row(row_str)
+    return table
+
+
+def render_game_step(grid, prompt: str, response: str):
+    console.clear()
+
+    grid_panel = Panel(render_grid(grid), title="Gridworld", box=box.ROUNDED)
+    prompt_panel = Panel(Text(prompt), title="Prompt", style="dim", box=box.ROUNDED)
+    response_panel = Panel(
+        Text(response, style="bold magenta"), title="LLM Response", box=box.ROUNDED
+    )
+
+    console.print(grid_panel)
+    console.print(prompt_panel)
+    console.print(response_panel)
+
+
 @click.command()
 @click.option(
     "--agent",
-    "agent_name",
     type=click.Choice(["cheating", "random", "llm"]),
     default="cheating",
-    help="Which agent to use",
-)
-@click.option("--render/--no-render", default=True, help="Render the grid at each step")
-@click.option(
-    "--max-iter",
-    "max_iter",
-    default=10_000,
-    type=int,
-    help="Max number of actions before we give up",
+    help="Which agent to run",
 )
 @click.option(
     "--llm-backend",
@@ -30,37 +62,47 @@ load_dotenv(dotenv_path=".env.secret", override=True)
     default="fake",
     help="Which LLM backend to use",
 )
-def main(agent_name: str, render: bool, max_iter: int, llm_backend: str):
+@click.option(
+    "--render-rich/--no-render-rich", default=True, help="Fancy Rich-based render"
+)
+@click.option("--max-iter", type=int, default=25, help="Maximum attempts")
+def main(agent: str, llm_backend: str, render_rich: bool, max_iter):
     env = KeyDoorEnv()
 
-    agent: Agent
+    agent_instance: Agent
 
-    if agent_name == "cheating":
-        agent = CheatingAgent()
-    elif agent_name == "random":
-        agent = RandomAgent()
+    if agent == "cheating":
+        agent_instance = CheatingAgent()
+    elif agent == "random":
+        agent_instance = RandomAgent()
+    elif agent == "llm":
+        agent_instance = LLMAgent(llm_backend)
     else:
-        agent = LLMAgent(llm_backend)
+        raise ValueError(f"Unsupported agent type: {agent}")
 
     obs = env.reset()
     done = False
 
     i = 0
+
     while not done and i < max_iter:
-        if render:
-            env.render()
-            print("\n-------\n")
-        agent.observe(obs)
-        action = agent.act()
+        agent_instance.observe(obs)
+        action: Action = agent_instance.act()
+        prompt = getattr(agent_instance, "_format_prompt", lambda: "N/A")()
         obs, done, info = env.step(action)
+
+        if render_rich:
+            render_game_step(env.grid, prompt, action.name)
+        else:
+            print("Action:", action.name)
+            env.render()
 
         i += 1
 
-    print("Simulation done!")
     if i < max_iter:
-        print(f"Completed in {i} steps")
+        console.print("[bold green]Episode finished.[/bold green]")
     else:
-        print("Failed to complete.")
+        console.print("[bold red]Episode failed.[/bold red]")
 
 
 if __name__ == "__main__":

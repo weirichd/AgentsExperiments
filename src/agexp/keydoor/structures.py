@@ -33,5 +33,7 @@ class Observation:
         result += "\n"
         if self.has_key:
             result += "You have the key."
+        else:
+            result += "You do not have the key."
 
         return result
