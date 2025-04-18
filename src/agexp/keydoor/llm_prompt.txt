@@ -1,0 +1,14 @@
+You are an agent in a grid world. Each character has the following meanings:
+
+@ - You
+# - Wall
+K - Key
+D - Door
+
+You can only pick up the key while standing on the key space.
+You will not see the key while you are standing on it.
+You can only open the door while you are standing on the door space.
+You will not see the door while you are standing on it.
+
+Your responses should be one of:
+move up, move down, move left, move right, pick up key, open door.

@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
+from typing import Callable
 
 
 class Tile(Enum):
@@ -30,10 +31,14 @@ class Observation:
     @property
     def as_string(self) -> str:
         result = "\n".join(["".join([t.value for t in row]) for row in self.grid])
-        result += "\n"
-        if self.has_key:
-            result += "You have the key."
-        else:
-            result += "You do not have the key."
 
         return result
+
+
+@dataclass
+class Tool:
+    """A tool which the LLM Agent can access."""
+
+    name: str
+    description: str
+    func: Callable[[str], str]

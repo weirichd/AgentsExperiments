@@ -5,8 +5,15 @@ from rich.table import Table
 from rich.text import Text
 from rich import box
 from agexp.keydoor.env import KeyDoorEnv
-from agexp.keydoor.agent import CheatingAgent, RandomAgent, LLMAgent, Agent
+from agexp.keydoor.agent import (
+    CheatingAgent,
+    RandomAgent,
+    LLMAgent,
+    Agent,
+    LLMToolAgent,
+)
 from agexp.keydoor.structures import Action
+from agexp.keydoor.tools import make_core_tools
 
 from dotenv import load_dotenv
 
@@ -53,20 +60,21 @@ def render_game_step(grid, prompt: str, response: str):
 @click.option(
     "--agent",
     type=click.Choice(["cheating", "random", "llm"]),
-    default="cheating",
+    default="llm",
     help="Which agent to run",
 )
 @click.option(
     "--llm-backend",
     type=click.Choice(["fake", "openai"]),
-    default="fake",
+    default="openai",
     help="Which LLM backend to use",
 )
 @click.option(
     "--render-rich/--no-render-rich", default=True, help="Fancy Rich-based render"
 )
 @click.option("--max-iter", type=int, default=25, help="Maximum attempts")
-def main(agent: str, llm_backend: str, render_rich: bool, max_iter):
+@click.option("--tool/--no-tool", default=True, help="Use a tool based LLM")
+def main(agent: str, llm_backend: str, render_rich: bool, max_iter, tool: bool):
     env = KeyDoorEnv()
 
     agent_instance: Agent
@@ -76,7 +84,13 @@ def main(agent: str, llm_backend: str, render_rich: bool, max_iter):
     elif agent == "random":
         agent_instance = RandomAgent()
     elif agent == "llm":
-        agent_instance = LLMAgent(llm_backend)
+        if tool:
+            agent_instance = LLMToolAgent(llm_backend)
+            for t in make_core_tools(env):
+                agent_instance.register_tool(t)
+
+        else:
+            agent_instance = LLMAgent(llm_backend)
     else:
         raise ValueError(f"Unsupported agent type: {agent}")
 
